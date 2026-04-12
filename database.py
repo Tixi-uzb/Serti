@@ -71,6 +71,15 @@ def create_certificate_record(user_id, serial_number, profession, file_path):
     conn.commit()
     conn.close()
 
+def delete_user_data(user_id):
+    """Sertifikat yuborgandan keyin foydalanuvchi ma'lumotlarini o'chiradi"""
+    conn = get_connection()
+    c = conn.cursor()
+    c.execute('DELETE FROM certificates WHERE user_id = ?', (user_id,))
+    c.execute('DELETE FROM users WHERE user_id = ?', (user_id,))
+    conn.commit()
+    conn.close()
+
 def get_certificate(serial_number):
     conn = get_connection()
     conn.row_factory = sqlite3.Row

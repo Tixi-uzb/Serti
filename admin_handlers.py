@@ -70,9 +70,12 @@ async def approve_payment(callback: CallbackQuery, bot: Bot):
             reply_markup=None
         )
         
-        # Delete file after sending to save storage
+        # PDF faylni o'chirish
         if os.path.exists(cert_path):
             os.remove(cert_path)
+
+        # Foydalanuvchi ma'lumotlarini bazadan o'chirish
+        db.delete_user_data(user_id)
             
     except Exception as e:
         print(f"Error generating certificate: {e}")
@@ -103,3 +106,6 @@ async def reject_payment(callback: CallbackQuery, bot: Bot):
         chat_id=user_id,
         text="❌ Kechirasiz, sizning to'lovingiz tasdiqlanmadi. Iltimos, admin bilan bog'laning yoki qaytadan urinib ko'ring."
     )
+
+    # Rad etilgan foydalanuvchi ma'lumotlarini ham o'chirish
+    db.delete_user_data(user_id)
