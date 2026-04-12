@@ -1,0 +1,8 @@
+.env
+__pycache__/
+certs/
+bot_database.db
+*.pyc
+venv/
+.antigravity/
+.vscode/
