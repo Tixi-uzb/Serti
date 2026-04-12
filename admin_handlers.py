@@ -64,6 +64,7 @@ async def approve_payment(callback: CallbackQuery, bot: Bot):
             parse_mode="HTML"
         )
         
+        await callback.message.edit_caption(
             caption=callback.message.caption.replace("yaratilmoqda...", "Muvaffaqiyatli yuborildi!"),
             parse_mode="HTML",
             reply_markup=None
