@@ -32,7 +32,8 @@ async def approve_payment(callback: CallbackQuery, bot: Bot):
     
     # Generate certificate
     serial_number = generate_serial_number()
-    date_str = datetime.datetime.now().strftime("%d.%m.%Y")
+    tz = datetime.timezone(datetime.timedelta(hours=5))
+    date_str = datetime.datetime.now(tz).strftime("%d.%m.%Y")
     
     await callback.message.edit_caption(
         caption=callback.message.caption + "\n\n✅ <b>Tasdiqlandi!</b> Sertifikat yaratilmoqda...",
