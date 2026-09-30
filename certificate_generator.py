@@ -3,12 +3,11 @@ import io
 import qrcode
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import landscape, A4
+from reportlab.lib.colors import HexColor
 from reportlab.lib.utils import ImageReader
 import urllib.parse
 
-
 def generate_qr_code(serial_number, verification_url_base, full_name, profession, date_str):
-    # Construct the verification link with additional data for a static site
     params = {
         'id': serial_number,
         'name': full_name,
@@ -18,19 +17,16 @@ def generate_qr_code(serial_number, verification_url_base, full_name, profession
     query_string = urllib.parse.urlencode(params)
     separator = '?' if '?' not in verification_url_base else '&'
     verify_link = f"{verification_url_base}{separator}{query_string}"
-
-
-
     
     qr = qrcode.QRCode(
         version=1, 
         error_correction=qrcode.constants.ERROR_CORRECT_H, 
         box_size=10, 
-        border=4,
+        border=1,
     )
     qr.add_data(verify_link)
     qr.make(fit=True)
-    img = qr.make_image(fill_color="black", back_color="white")
+    img = qr.make_image(fill_color="#0f172a", back_color="white")
     
     img_byte_arr = io.BytesIO()
     img.save(img_byte_arr, format='PNG')
@@ -42,93 +38,120 @@ def create_certificate(full_name, profession, date_str, serial_number, bot_usern
     os.makedirs(output_dir, exist_ok=True)
     file_path = os.path.join(output_dir, f"cert_{serial_number}.pdf")
     
-    # QR kod uchun havolani generatsiya qilish
     from config import VERIFICATION_URL
     qr_img = generate_qr_code(serial_number, VERIFICATION_URL, full_name, profession, date_str)
-
-
     
     c = canvas.Canvas(file_path, pagesize=landscape(A4))
     width, height = landscape(A4)
     
-    # Background and Border
-    c.setFillColorRGB(1, 1, 1)
-    c.rect(0, 0, width, height, fill=1)
+    # Background
+    c.setFillColor(HexColor("#f8fafc"))
+    c.rect(0, 0, width, height, fill=1, stroke=0)
     
-    # Ornamental Border (Simulated with multiple lines)
-    c.setStrokeColorRGB(0.1, 0.3, 0.7) # Professional Blue to match logo
-    c.setLineWidth(4)
-    c.rect(30, 30, width-60, height-60, fill=0)
-    c.setStrokeColorRGB(0.2, 0.6, 0.4) # Professional Green/Sea-green for inner border
-    c.setLineWidth(2)
-    c.rect(36, 36, width-72, height-72, fill=0)
-    
-    # Top Logo Image "user_logo.png"
-    logo_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'user_logo.png')
-    if os.path.exists(logo_path):
-        logo_img = ImageReader(logo_path)
-        # Position logo centered at the top - Enlarged
-        c.drawImage(logo_img, width/2.0 - 250, height - 140, width=500, height=120, mask='auto', preserveAspectRatio=True)
-    
-    c.setStrokeColorRGB(0.5, 0.5, 0.5)
+    # Main Card Base
+    margin = 30
+    c.setFillColor(HexColor("#ffffff"))
+    c.setStrokeColor(HexColor("#e2e8f0"))
     c.setLineWidth(1)
-    c.line(width/2.0 - 350, height - 155, width/2.0 - 50, height - 155)
-    c.line(width/2.0 + 50, height - 155, width/2.0 + 350, height - 155)
+    c.roundRect(margin, margin, width - 2*margin, height - 2*margin, 12, fill=1, stroke=1)
     
-    c.setFont("Helvetica-Bold", 10)
-    c.drawCentredString(width/2.0 - 200, height - 175, "KASB-HUNARGA O'QITISH MARKAZI")
-    c.drawCentredString(width/2.0 + 200, height - 175, "VOCATIONAL TRAINING CENTER")
+    # Inner Gold Border
+    inner_margin = margin + 15
+    c.setStrokeColor(HexColor("#d4af37"))
+    c.setLineWidth(1.2)
+    c.rect(inner_margin, inner_margin, width - 2*inner_margin, height - 2*inner_margin, fill=0, stroke=1)
     
-    # Title
-    c.setFillColorRGB(0.1, 0.3, 0.7) # Blue to match logo
-    c.setFont("Times-Bold", 40)
-    c.drawCentredString(width/2.0, height - 230, "SERTIFIKAT")
+    # Gold Corners
+    corner_size = 20
+    c.setLineWidth(3)
+    c.line(inner_margin-2, height-inner_margin-corner_size, inner_margin-2, height-inner_margin+2)
+    c.line(inner_margin-2, height-inner_margin+2, inner_margin+corner_size, height-inner_margin+2)
+    c.line(width-inner_margin-corner_size, height-inner_margin+2, width-inner_margin+2, height-inner_margin+2)
+    c.line(width-inner_margin+2, height-inner_margin+2, width-inner_margin+2, height-inner_margin-corner_size)
+    c.line(inner_margin-2, inner_margin+corner_size, inner_margin-2, inner_margin-2)
+    c.line(inner_margin-2, inner_margin-2, inner_margin+corner_size, inner_margin-2)
+    c.line(width-inner_margin+2, inner_margin+corner_size, width-inner_margin+2, inner_margin-2)
+    c.line(width-inner_margin-corner_size, inner_margin-2, width-inner_margin+2, inner_margin-2)
     
-    # Serial
-    c.setFillColorRGB(0, 0, 0)
+    cx = width / 2.0
+    
+    # Header Title
+    c.setFillColor(HexColor("#334155"))
     c.setFont("Helvetica-Bold", 14)
-    c.drawCentredString(width/2.0, height - 260, f"QQ № {serial_number}")
+    c.drawCentredString(cx, height - 90, "KASB-HUNARGA O'QITISH MARKAZI")
     
-    # Candidate Name
-    c.setFont("Helvetica-Bold", 24)
-    c.drawCentredString(width/2.0, height - 310, full_name.upper())
+    # Main Titles
+    c.setFillColor(HexColor("#0f172a"))
+    c.setFont("Times-Italic", 46)
+    c.drawCentredString(cx, height - 150, "Sertifikat")
     
-    # Uzbek description
-    c.setFont("Helvetica", 14)
-    c.drawCentredString(width/2.0, height - 350, f"Onlayn kasb-hunar platformasida {date_str} dagi holatga ko'ra 56 soatli")
-    
+    c.setFillColor(HexColor("#3b82f6"))
     c.setFont("Helvetica-Bold", 16)
-    c.drawCentredString(width/2.0, height - 375, profession)
+    c.drawCentredString(cx, height - 180, "C E R T I F I C A T E")
     
+    # Name
+    c.setFillColor(HexColor("#0f172a"))
+    c.setFont("Helvetica-Bold", 30)
+    c.drawCentredString(cx, height - 250, full_name.upper())
+    
+    # Name Underline
+    c.setStrokeColor(HexColor("#e2e8f0"))
+    c.setLineWidth(2)
+    name_width = c.stringWidth(full_name.upper(), "Helvetica-Bold", 30)
+    c.line(cx - name_width/2 - 20, height - 265, cx + name_width/2 + 20, height - 265)
+    
+    # Description 1
+    c.setFillColor(HexColor("#475569"))
     c.setFont("Helvetica", 14)
-    c.drawCentredString(width/2.0, height - 400, "kasbi bo'yicha (tayyorlash, qayta tayyorlash va malakasini oshirish) kursini to'liq tamomladi.")
+    c.drawCentredString(cx, height - 310, f"Onlayn kasb-hunar platformasida {date_str} dagi holatga ko'ra 56 soatli")
     
-    # Bottom Layout (QR code, Signatures, Reg info)
+    # Profession Badge
+    c.setFont("Helvetica-Bold", 18)
+    prof_width = c.stringWidth(profession, "Helvetica-Bold", 18)
+    badge_w = prof_width + 40
+    badge_h = 40
+    badge_x = cx - badge_w/2
+    badge_y = height - 370
+    
+    c.setFillColor(HexColor("#0f172a"))
+    c.roundRect(badge_x, badge_y, badge_w, badge_h, 8, fill=1, stroke=0)
+    
+    c.setFillColor(HexColor("#ffffff"))
+    c.drawCentredString(cx, badge_y + 13, profession)
+    
+    # Description 2
+    c.setFillColor(HexColor("#475569"))
+    c.setFont("Helvetica", 14)
+    c.drawCentredString(cx, height - 420, "kasbi bo'yicha (tayyorlash, qayta tayyorlash va malakasini oshirish) kursini to'liq tamomladi.")
+    
+    # Bottom Layout (QR and Details)
+    qr_y = inner_margin + 15
+    qr_x = inner_margin + 20
+    
+    # Dashed Line separator
+    c.setStrokeColor(HexColor("#cbd5e1"))
+    c.setLineWidth(1)
+    c.setDash(4, 4)
+    c.line(inner_margin + 20, qr_y + 115, width - inner_margin - 20, qr_y + 115)
+    c.setDash()
+    
+    # QR Code
     qr_reader = ImageReader(qr_img)
-    c.drawImage(qr_reader, 60, 60, width=100, height=100)
+    c.drawImage(qr_reader, qr_x, qr_y + 10, width=90, height=90)
     
-    # QR kod ostiga yozuv qo'shish
-    c.setFont("Helvetica", 7)
-    c.drawCentredString(110, 50, "Skaner qiling va tekshiring")
+    # Skaner qiling matni olib tashlandi
     
-    # Deleted Director / Director: D. Raximov section
     
-    c.drawString(530, 130, "Ro'yxatga olish raqami")
-
-    c.drawString(530, 115, "(Registration number):")
-    c.setFont("Helvetica-Bold", 12)
-    c.drawString(680, 120, str(serial_number))
+    # Registration Info (Right side)
+    c.setFillColor(HexColor("#94a3b8"))
+    c.setFont("Helvetica-Bold", 10)
+    c.drawRightString(width - inner_margin - 20, qr_y + 70, "SERIYA RAQAMI")
+    c.drawRightString(width - inner_margin - 20, qr_y + 30, "BERILGAN SANA")
     
-    c.setFont("Helvetica", 12)
-    c.drawString(530, 90, "Ro'yxatga olish sanasi")
-    c.drawString(530, 75, "(Registration date):")
-    c.setFont("Helvetica-Bold", 12)
-    c.drawString(680, 80, str(date_str))
-    
-    # Note at bottom
-    c.setFont("Helvetica-Oblique", 8)
-    note = "Izoh: Ushbu sertifikat egallagan bilimlarni mehnat faoliyatida amalga oshirish huquqini beradi."
-    c.drawCentredString(width/2.0, 40, note)
+    c.setFillColor(HexColor("#0f172a"))
+    c.setFont("Helvetica-Bold", 18)
+    c.drawRightString(width - inner_margin - 20, qr_y + 50, f"#{serial_number}")
+    c.drawRightString(width - inner_margin - 20, qr_y + 10, date_str)
     
     c.showPage()
     c.save()
