@@ -3,7 +3,7 @@ import uuid
 import os
 
 from aiogram import Router, F, Bot
-from aiogram.types import CallbackQuery, FSInputFile
+from aiogram.types import CallbackQuery, FSInputFile, Message
 
 import database as db
 import keyboards
@@ -110,3 +110,58 @@ async def reject_payment(callback: CallbackQuery, bot: Bot):
 
     # Rad etilgan foydalanuvchi ma'lumotlarini ham o'chirish
     db.delete_user_data(user_id)
+
+import re
+from aiogram.filters import Command
+
+@router.message(Command("send"))
+async def admin_send_message(message: Message, bot: Bot):
+    if message.from_user.id not in ADMIN_IDS:
+        return
+        
+    parts = message.text.split(maxsplit=2)
+    if len(parts) < 3:
+        await message.answer("Foydalanish: /send <ID> <xabar>\nMasalan: /send 123456789 Salom")
+        return
+        
+    user_id_str = parts[1]
+    text = parts[2]
+    
+    if not user_id_str.isdigit():
+        await message.answer("Xato: ID raqam bo'lishi kerak.")
+        return
+        
+    user_id = int(user_id_str)
+    try:
+        await bot.send_message(
+            chat_id=user_id, 
+            text=f"👨‍💻 <b>Markaz ma'muriyati:</b>\n\n{text}", 
+            parse_mode="HTML"
+        )
+        await message.answer(f"✅ Xabar {user_id} ga yuborildi.")
+    except Exception as e:
+        await message.answer(f"❌ Xabar yuborishda xatolik: {e}")
+
+@router.message(F.reply_to_message)
+async def reply_to_user(message: Message, bot: Bot):
+    if message.from_user.id not in ADMIN_IDS:
+        return
+        
+    original_msg = message.reply_to_message
+    text_to_search = original_msg.caption if original_msg.caption else original_msg.text
+    
+    if not text_to_search:
+        return
+        
+    match = re.search(r"ID:\s*(\d+)", text_to_search)
+    if match:
+        user_id = int(match.group(1))
+        try:
+            await bot.send_message(
+                chat_id=user_id, 
+                text=f"👨‍💻 <b>Markaz ma'muriyati:</b>\n\n{message.text}", 
+                parse_mode="HTML"
+            )
+            await message.answer("✅ Xabaringiz foydalanuvchiga yuborildi.")
+        except Exception as e:
+            await message.answer(f"❌ Xatolik yuz berdi. Foydalanuvchi botni bloklagan bo'lishi mumkin.\n{e}")
