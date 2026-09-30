@@ -102,8 +102,8 @@ def create_certificate(full_name, profession, date_str, serial_number, bot_usern
     
     # Description 1
     c.setFillColor(HexColor("#475569"))
-    c.setFont("Helvetica", 14)
-    c.drawCentredString(cx, height - 310, f"Onlayn kasb-hunar platformasida {date_str} dagi holatga ko'ra 56 soatli")
+    c.setFont("Helvetica", 16)
+    c.drawCentredString(cx, height - 310, "Onlayn kasb-hunar platformasida 56 soatli")
     
     # Profession Badge
     c.setFont("Helvetica-Bold", 18)
@@ -122,7 +122,7 @@ def create_certificate(full_name, profession, date_str, serial_number, bot_usern
     # Description 2
     c.setFillColor(HexColor("#475569"))
     c.setFont("Helvetica", 14)
-    c.drawCentredString(cx, height - 420, "kasbi bo'yicha (tayyorlash, qayta tayyorlash va malakasini oshirish) kursini to'liq tamomladi.")
+    c.drawCentredString(cx, height - 420, "yo'nalishi bo'yicha (tayyorlash, qayta tayyorlash va malakasini oshirish) o'quv kursini muvaffaqiyatli tamomladi.")
     
     # Bottom Layout (QR and Details)
     qr_y = inner_margin + 15
