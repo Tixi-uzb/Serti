@@ -100,7 +100,7 @@ async def process_payment_screenshot(message: Message, state: FSMContext, bot: B
     
     await message.answer(
         "✅ Rahmat! Sizning so'rovingiz adminga yuborildi. "
-        "Admin to'lovni tasdiqlagandan so'ng, sertifikat sizga avtomatik tarzda yuboriladi."
+        "Admin to'lovni tasdiqlagandan so'ng, sertifikat sizga avtomatik tarzda yuboriladi.\n\n💬 Agar qandaydir muammo bo'lsa yoki ma'lumotlarni o'zgartirmoqchi bo'lsangiz, adminga murojaat qilishingiz mumkin: @Zed003"
     )
     await state.clear()
     
