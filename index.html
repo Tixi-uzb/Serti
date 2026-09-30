@@ -263,19 +263,19 @@
                     <h1 class="cert-title">Sertifikat</h1>
                     <div class="cert-subtitle">CERTIFICATE</div>
                     
-                    <div class="cert-description">
-                        Ushbu hujjat quyidagi shaxsning kursni muvaffaqiyatli tamomlaganini tasdiqlaydi:
-                    </div>
-
                     <div class="recipient-name" id="display-name">--- ---</div>
+
+                    <div class="cert-description">
+                        Onlayn kasb-hunar platformasida <span id="display-date-inline"></span> dagi holatga ko'ra 56 soatli
+                    </div>
                     
                     <div>
                         <div class="profession-badge" id="display-prof">Mutaxassislik</div>
                     </div>
 
-                    <p style="font-size: 12px; color: #64748b; font-style: italic;">
-                        Ushbu sertifikat egallagan bilimlarni mehnat faoliyatida amalga oshirish huquqini beradi.
-                    </p>
+                    <div class="cert-description" style="margin-top: -10px; margin-bottom: 40px;">
+                        kasbi bo'yicha (tayyorlash, qayta tayyorlash va malakasini oshirish) kursini to'liq tamomladi.
+                    </div>
 
                     <div class="details-grid">
                         <div class="detail-item">
@@ -316,6 +316,7 @@
             document.getElementById('display-name').innerText = name;
             document.getElementById('display-prof').innerText = prof;
             document.getElementById('display-date').innerText = date;
+            document.getElementById('display-date-inline').innerText = date;
 
             // Page title update
             document.title = name + " - Elektron Sertifikat";
