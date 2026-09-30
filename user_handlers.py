@@ -59,8 +59,9 @@ async def process_contact(message: Message, state: FSMContext):
     db.update_user_info(message.from_user.id, phone=phone)
     
     await message.answer(
-        "Rahmat! Endi to'liq ism-sharifingizni (Ism va Familiya) kiriting:",
-        reply_markup=ReplyKeyboardRemove()
+        "Rahmat! Endi sertifikat kimning nomiga berilishini xohlasangiz, o'sha insonning **Ism va Familiyasini** kiriting:",
+        reply_markup=ReplyKeyboardRemove(),
+        parse_mode="Markdown"
     )
     await state.set_state(Registration.waiting_for_name)
 
@@ -106,14 +107,17 @@ async def process_payment_screenshot(message: Message, state: FSMContext, bot: B
     # Send to admins
     for admin_id in ADMIN_IDS:
         try:
+            username_str = f"@{user['username']}" if user.get('username') else "Mavjud emas"
+            
             await bot.send_photo(
                 chat_id=admin_id,
                 photo=photo_id,
                 caption=(
                     f"🆕 <b>Yangi sertifikat so'rovi!</b>\n\n"
-                    f"👤 <b>Foydalanuvchi:</b> {user['full_name']}\n"
+                    f"👤 <b>Sertifikat egasi:</b> {user['full_name']}\n"
                     f"📱 <b>Telefon:</b> {user['phone']}\n"
                     f"🎓 <b>Kasb:</b> {user['profession']}\n"
+                    f"🔗 <b>Username:</b> {username_str}\n"
                     f"🆔 <b>ID:</b> {message.from_user.id}"
                 ),
                 reply_markup=keyboards.get_admin_approval_keyboard(message.from_user.id),
