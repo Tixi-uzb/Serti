@@ -60,7 +60,7 @@ async def approve_payment(callback: CallbackQuery, bot: Bot):
             caption=(
                 f"🎉 <b>Tabriklaymiz!</b> Sizning to'lovingiz tasdiqlandi.\n\n"
                 f"Sizning sertifikatingiz tayyor!\n\n"
-                f"Seriya raqami: {serial_number}"
+                f"Seriya raqami: {serial_number}\n\n💬 <i>Savollar yoki o'zgartirishlar uchun murojaat: @Zed003</i>"
             ),
             parse_mode="HTML"
         )
