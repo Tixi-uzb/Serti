@@ -82,10 +82,11 @@ async def process_profession(callback: CallbackQuery, state: FSMContext):
     db.update_user_info(callback.from_user.id, profession=profession)
     
     await callback.message.edit_text(
-        f"Kasb tanlandi: <b>{profession}</b>\n\n"
-        f"To'lov qilish uchun quyidagi karta raqamiga <b>{PRICE}</b> o'tkazing:\n\n"
-        f"💳 Karta: <code>{CARD_NUMBER}</code>\n\n"
-        f"To'lovni muvaffaqiyatli amalga oshirgandan so'ng, to'lov skrinshotini (rasmini) shu yerga yuboring.",
+        f"✅ Kasb: <b>{profession}</b>\n\n"
+        f"Sertifikatni olish uchun 2 ta oson qadam qoldi:\n\n"
+        f"1️⃣ Quyidagi kartaga <b>{PRICE}</b> to'lov qiling:\n"
+        f"💳 Karta: <code>{CARD_NUMBER}</code> <i>(ustiga bossangiz nusxa oladi)</i>\n\n"
+        f"2️⃣ To'lov qilinganligi haqidagi chekni (skrinshotni) menga rasm qilib yuboring! 👇",
         parse_mode="HTML"
     )
     await state.set_state(Registration.waiting_for_payment)
